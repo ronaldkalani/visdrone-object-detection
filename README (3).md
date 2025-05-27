@@ -1,16 +1,16 @@
 
-# 🛰️ VisDrone Object Detection (YOLOv5 + Streamlit)
+# VisDrone Object Detection (YOLOv5 + Streamlit)
 
 This Streamlit app performs real-time **object detection** on the [VisDrone2019](http://aiskyeye.com/) dataset using a **YOLOv5 model**.
 
-🔍 It allows users to:
+It allows users to:
 - Browse and select drone imagery
 - Run YOLOv5 detection locally or on Streamlit Cloud
 - View results as images and structured detection tables
 
 ---
 
-## 🚀 Live App
+## Live App
 
 👉 [Click here to launch the Streamlit app](https://streamlit.io/cloud) (Once deployed)
 
@@ -27,7 +27,7 @@ visdrone-object-detection/
 
 ---
 
-## 🧪 Try Locally
+## Try Locally
 
 ```bash
 # Clone the repo
@@ -50,14 +50,14 @@ streamlit run app.py
 
 ## 🛠 Features
 
-- 🔎 **YOLOv5s model** for object detection
-- 📷 Image browsing from local dataset
-- 📊 Detection table view (coordinates, confidence, label)
-- 📦 Export-ready for further tracking or labeling
+- **YOLOv5s model** for object detection
+- Image browsing from local dataset
+- Detection table view (coordinates, confidence, label)
+- Export-ready for further tracking or labeling
 
 ---
 
-## 🧰 Requirements
+## Requirements
 
 - Python 3.10 (recommended)
 - Streamlit ≥ 1.34.0
@@ -66,7 +66,7 @@ streamlit run app.py
 
 ---
 
-## 📸 Dataset (VisDrone2019)
+## Dataset (VisDrone2019)
 
 This project uses aerial images from the [VisDrone2019-DET-train](http://aiskyeye.com/) dataset.  
 Please download and organize the dataset in the following structure if running locally:
@@ -86,7 +86,7 @@ This project is licensed under the MIT License.
 
 ---
 
-## 🤖 Credits
+## Credits
 
 Built by [Ronald Kalani](https://github.com/ronaldkalani)  
 Powered by: [Ultralytics YOLOv5](https://github.com/ultralytics/yolov5), Streamlit, PyTorch
