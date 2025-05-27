@@ -1,70 +1,39 @@
-
 import streamlit as st
 import torch
 import cv2
-import os
 import numpy as np
-from PIL import Image
-from deep_sort_realtime.deepsort_tracker import DeepSort
+from deepsort_tracker import track_objects
 
-# ---- SETTINGS ----
-VIDEO_DIR = r"G:\My Drive\ComputerVision Consultant\VisDrone2019-DET-train\VisDrone2019-DET-train\videos"
+model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
 
-# ---- LOAD MODEL ----
-@st.cache_resource
-def load_model():
-    model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
-    return model
+st.title("🎥 Object Tracking with YOLOv5 + DeepSORT")
 
-model = load_model()
+video_file = st.file_uploader("Upload a video", type=["mp4", "mov", "avi"])
 
-# ---- INIT TRACKER ----
-tracker = DeepSort(max_age=30)
+if video_file:
+    tfile = f"temp_video.mp4"
+    with open(tfile, 'wb') as f:
+        f.write(video_file.read())
 
-# ---- APP HEADER ----
-st.set_page_config(page_title="VisDrone Object Tracking", layout="wide")
-st.title("🎥 VisDrone Object Tracking with YOLOv5 + DeepSORT")
-st.markdown("Upload a video or select a file to see object detection with tracking in action.")
+    cap = cv2.VideoCapture(tfile)
+    stframe = st.empty()
 
-# ---- LOAD VIDEO FILES ----
-if not os.path.exists(VIDEO_DIR):
-    st.error(f"Video directory not found: `{VIDEO_DIR}`")
-    st.stop()
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
 
-video_files = sorted([f for f in os.listdir(VIDEO_DIR) if f.endswith(('.mp4', '.avi'))])
+        results = model(frame)
+        detections = results.xyxy[0].cpu().numpy()  # [x1, y1, x2, y2, conf, cls]
 
-if not video_files:
-    st.warning("No video files found in the folder.")
-    st.stop()
+        tracked = track_objects(detections, frame)
 
-selected_file = st.selectbox("Choose a video:", video_files)
-video_path = os.path.join(VIDEO_DIR, selected_file)
+        for obj in tracked:
+            x1, y1, x2, y2 = map(int, obj['bbox'])
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            cv2.putText(frame, f"ID {obj['track_id']}", (x1, y1 - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
 
-# ---- PLAY VIDEO FRAME BY FRAME ----
-cap = cv2.VideoCapture(video_path)
-stframe = st.empty()
+        stframe.image(frame, channels="BGR")
 
-while cap.isOpened():
-    ret, frame = cap.read()
-    if not ret:
-        break
-
-    # YOLO Detection
-    results = model(frame)
-    detections = results.xyxy[0].cpu().numpy()  # [x1, y1, x2, y2, conf, cls]
-
-    # DeepSORT Tracking
-    tracked = tracker.update_tracks(detections, frame=frame)
-
-    # Draw boxes
-    for obj in tracked:
-        if not obj.is_confirmed():
-            continue
-        x1, y1, x2, y2 = map(int, obj.to_ltrb())
-        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-        cv2.putText(frame, f"ID {obj.track_id}", (x1, y1 - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
-
-    stframe.image(frame, channels="BGR", use_column_width=True)
-
-cap.release()
+    cap.release()
