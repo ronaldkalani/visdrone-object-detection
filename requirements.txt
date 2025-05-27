@@ -1,0 +1,9 @@
+torch==2.0.1+cpu
+torchvision==0.15.2+cpu
+torchaudio==2.0.2+cpu
+numpy==1.26.4
+streamlit==1.45.1
+opencv-python
+Pillow
+matplotlib
+pyyaml
