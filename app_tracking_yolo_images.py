@@ -89,7 +89,7 @@ if play_button:
                         cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
         # ---- Display Frame ----
-        frame_placeholder.image(image_rgb, caption=f"Frame {idx + 1}/{len(image_files)}", use_column_width=True)
+        frame_placeholder.image(image_rgb, caption=f"Frame {idx + 1}/{len(image_files)}", use_container_width=True)
         time.sleep(FRAME_DELAY)
 
 
